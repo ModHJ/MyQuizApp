@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Background Image -->
+    <ImageView
+        android:id="@+id/bg_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/quiz_background_image"
+        android:contentDescription="quiz_background_image"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <!-- Sound Controls -->
+    <LinearLayout
+        android:id="@+id/sound_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+        <include layout="@layout/view_sound_controls" />
+    </LinearLayout>
+
+    <!-- Timer Seconds -->
+    <TextView
+        android:id="@+id/tv_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="30s"
+        android:textSize="18sp"
+        android:textColor="#F5F5F5"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/sound_controls"/>
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progress_timer"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_below="@id/tv_timer"
+        android:layout_marginTop="8dp"
+        android:progressDrawable="@drawable/quiz_progress_bar"
+        android:max="30"
+        android:progress="30"
+        android:layout_marginHorizontal="55dp"/>
+
+    <!-- Quiz Container -->
+    <LinearLayout
+        android:id="@+id/quiz_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progress_timer"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp"
+        android:layout_marginHorizontal="55dp">
+
+        <!-- Question Number -->
+        <TextView
+            android:id="@+id/tv_question_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Question 1"
+            android:textSize="20sp"
+            android:textColor="@color/off_white"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal" />
+
+        <!-- Question Text -->
+        <TextView
+            android:id="@+id/tv_question"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:textSize="22sp"
+            android:textColor="@color/off_white"
+            android:text="What's the capital of paris"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <!-- Answer Buttons -->
+        <LinearLayout
+            android:id="@+id/answer_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_answer_a"
+                style="@style/QuizAnswerButton"
+                android:text="A. Paris" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_answer_b"
+                style="@style/QuizAnswerButton"
+                android:text="B. Berlin" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_answer_c"
+                style="@style/QuizAnswerButton"
+                android:text="C. Rome" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_answer_d"
+                style="@style/QuizAnswerButton"
+                android:text="D. Madrid" />
+        </LinearLayout>
+
+        <!-- Confirm Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirm Answer"
+            android:textAllCaps="false"
+            android:textColor="#F5F5F5"
+            android:background="@drawable/bg_orange_button"
+            android:layout_marginTop="50dp"/>
+    </LinearLayout>
+</RelativeLayout>
