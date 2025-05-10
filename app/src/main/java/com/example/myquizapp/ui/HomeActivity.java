@@ -43,8 +43,8 @@ public class HomeActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btn_logout);
 
         btnStartQuiz.setOnClickListener(v -> {
-            Toast.makeText(this, "Starting quiz...", Toast.LENGTH_SHORT).show();
-            // startActivity(new Intent(this, QuizActivity.class));
+            startActivity(new Intent(HomeActivity.this, QuizActivity.class));
+            finish(); // prevent back nav to home during quiz
         });
 
         btnLogout.setOnClickListener(v -> {
