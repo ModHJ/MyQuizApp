@@ -26,6 +26,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private QuizViewModel quizViewModel;
 
+    private SoundControls soundControls;
     private ProgressBar progress;
     private TextView tvTimer, tvQuestionNumber, tvQuestion;
     private AppCompatButton[] answerButtons;
@@ -41,6 +42,9 @@ public class QuizActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quiz);
 
         // Init UI references
+        soundControls = new SoundControls(this,
+                            findViewById(R.id.sound_controls),
+                            R.raw.quiz_countdown, false);
         tvTimer = findViewById(R.id.tv_timer);
         tvQuestionNumber = findViewById(R.id.tv_question_number);
         tvQuestion = findViewById(R.id.tv_question);
@@ -73,7 +77,7 @@ public class QuizActivity extends AppCompatActivity {
     private void showCurrentQuestion() {
         QuizQuestion q = quizViewModel.getCurrentQuestion();
         if (q == null) return;
-
+        soundControls.resetAndPlayMusicFromStart();
         resetAnswerSelection();
 
         tvQuestion.setText(q.getQuestion());
@@ -143,13 +147,16 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 tvTimer.setText("0s");
+                quizViewModel.submitFinalScore();
                 // Timeout logic: treat as wrong and move on
-                btnConfirm.performClick(); // auto-confirm
+                showGameOver();
             }
         }.start();
     }
 
     private void showGameOver() {
+        soundControls.stopMusic();
+
         RelativeLayout gameOver = findViewById(R.id.game_over_container);
         TextView scoreText = findViewById(R.id.tv_final_score);
 
@@ -166,5 +173,12 @@ public class QuizActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (soundControls != null) {
+            soundControls.stopMusic();
+        }
+    }
 
 }

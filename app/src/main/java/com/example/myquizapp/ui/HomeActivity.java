@@ -29,7 +29,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // SoundControls setup (using included view)
         View soundControlsView = findViewById(R.id.sound_controls);
-        soundControls = new SoundControls(this, soundControlsView, R.raw.home_background_music);
+        soundControls = new SoundControls(this, soundControlsView, R.raw.home_background_music, true);
 
         // High score
         tvHighScore = findViewById(R.id.tv_high_score);
@@ -59,7 +59,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (soundControls != null) {
-            soundControls.release();
+            soundControls.stopMusic();
         }
     }
 }
