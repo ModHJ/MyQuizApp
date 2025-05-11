@@ -5,22 +5,29 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.example.myquizapp.data.local.session.AppSession;
 import com.example.myquizapp.model.QuizQuestion;
+import com.example.myquizapp.model.User;
 import com.example.myquizapp.repository.QuizDataSource;
+import com.example.myquizapp.repository.UserRepository;
 
 import java.util.List;
 
 public class QuizViewModel extends AndroidViewModel {
 
     private final QuizDataSource quizDataSource;
-
+    private final UserRepository userRepository;
     private List<QuizQuestion> questions;
     private int currentIndex = 0;
     private int score = 0;
 
-    public QuizViewModel(@NonNull Application application, QuizDataSource quizDataSource) {
-        super(application);
+    public QuizViewModel(@NonNull Application app,
+                         QuizDataSource quizDataSource,
+                         UserRepository userRepository)
+    {
+        super(app);
         this.quizDataSource = quizDataSource;
+        this.userRepository = userRepository;
     }
 
     public void loadQuestions(QuizDataSource.QuizCallback callback) {
@@ -37,10 +44,21 @@ public class QuizViewModel extends AndroidViewModel {
         return questions.get(currentIndex);
     }
 
-    public void confirmAnswer(String selectedAnswer) {
+    public boolean confirmAnswer(String selectedAnswer) {
         QuizQuestion current = getCurrentQuestion();
-        if (current != null && selectedAnswer.equals(current.getCorrectAnswer())) {
-            score++;
+        if (current == null) return false;
+
+        boolean isCorrect = selectedAnswer.equals(current.getCorrectAnswer());
+        if (isCorrect) score++;
+        return isCorrect;
+    }
+
+    public void submitFinalScore() {
+        User user = AppSession.getLoggedInUser();
+        if (user != null && score > user.getHighScore()) {
+            user.setHighScore(score);
+            userRepository.updateUser(user);
+            AppSession.setLoggedInUser(user);
         }
     }
 

@@ -1,8 +1,11 @@
 package com.example.myquizapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -10,7 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.myquizapp.R;
+import com.example.myquizapp.data.database.AppDatabase;
+import com.example.myquizapp.data.local.storage.RoomUserStorage;
 import com.example.myquizapp.repository.MockQuizDataSource;
+import com.example.myquizapp.repository.UserRepository;
 import com.example.myquizapp.viewmodel.QuizViewModel;
 import com.example.myquizapp.model.QuizQuestion;
 
@@ -19,7 +25,6 @@ import java.util.List;
 public class QuizActivity extends AppCompatActivity {
 
     private QuizViewModel quizViewModel;
-
 
     private ProgressBar progress;
     private TextView tvTimer, tvQuestionNumber, tvQuestion;
@@ -52,7 +57,14 @@ public class QuizActivity extends AppCompatActivity {
         setupConfirmButton();
 
         // Create ViewModel
-        quizViewModel = new QuizViewModel(getApplication(), new MockQuizDataSource());
+        quizViewModel = new QuizViewModel(getApplication(),
+                        new MockQuizDataSource(),
+                        new UserRepository(
+                                new RoomUserStorage(
+                                        AppDatabase
+                                        .getInstance(getApplicationContext())
+                                        .userDao()))
+        );
 
         // Load questions
         quizViewModel.loadQuestions(questions -> showCurrentQuestion());
@@ -99,16 +111,21 @@ public class QuizActivity extends AppCompatActivity {
             if (selectedAnswerIndex == -1) return;
 
             String selected = answerButtons[selectedAnswerIndex].getText().toString();
-            quizViewModel.confirmAnswer(selected);
-
             countDownTimer.cancel();
 
-            if (quizViewModel.hasNextQuestion()) {
-                quizViewModel.moveToNextQuestion();
-                showCurrentQuestion();
+            boolean isCorrect = quizViewModel.confirmAnswer(selected);
+
+            if (isCorrect) {
+                if (quizViewModel.hasNextQuestion()) {
+                    quizViewModel.moveToNextQuestion();
+                    showCurrentQuestion();
+                } else {
+                    quizViewModel.submitFinalScore();
+                    showGameOver();
+                }
             } else {
-                // TODO: show game over screen
-                Toast.makeText(this, "Final Score: " + quizViewModel.getScore(), Toast.LENGTH_SHORT).show();
+                quizViewModel.submitFinalScore();
+                showGameOver(); // Sudden death
             }
         });
     }
@@ -130,6 +147,23 @@ public class QuizActivity extends AppCompatActivity {
                 btnConfirm.performClick(); // auto-confirm
             }
         }.start();
+    }
+
+    private void showGameOver() {
+        RelativeLayout gameOver = findViewById(R.id.game_over_container);
+        TextView scoreText = findViewById(R.id.tv_final_score);
+
+        scoreText.setText("Score: " + quizViewModel.getScore());
+        gameOver.setVisibility(View.VISIBLE);
+
+        findViewById(R.id.btn_try_again).setOnClickListener(v -> {
+            recreate(); // restart activity
+        });
+
+        findViewById(R.id.btn_back_home).setOnClickListener(v -> {
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
+        });
     }
 
 
