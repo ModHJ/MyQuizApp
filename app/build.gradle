@@ -41,4 +41,7 @@ dependencies {
     implementation libs.room.runtime
     annotationProcessor libs.room.compiler
     implementation libs.jbcrypt
+    // Retrofit
+    implementation libs.retrofit
+    implementation libs.converter.gson
 }

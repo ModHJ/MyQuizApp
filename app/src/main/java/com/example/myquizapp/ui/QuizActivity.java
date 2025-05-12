@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -13,10 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.myquizapp.R;
-import com.example.myquizapp.data.database.AppDatabase;
-import com.example.myquizapp.data.local.storage.RoomUserStorage;
-import com.example.myquizapp.repository.MockQuizDataSource;
-import com.example.myquizapp.repository.UserRepository;
 import com.example.myquizapp.viewmodel.QuizViewModel;
 import com.example.myquizapp.model.QuizQuestion;
 
@@ -56,22 +53,24 @@ public class QuizActivity extends AppCompatActivity {
                 findViewById(R.id.btn_answer_c),
                 findViewById(R.id.btn_answer_d)
         };
+        LinearLayout quizContainer = findViewById(R.id.quiz_container);
+        quizContainer.setVisibility(View.GONE); // hide initially
 
         setupAnswerSelection();
         setupConfirmButton();
 
         // Create ViewModel
-        quizViewModel = new QuizViewModel(getApplication(),
-                        new MockQuizDataSource(),
-                        new UserRepository(
-                                new RoomUserStorage(
-                                        AppDatabase
-                                        .getInstance(getApplicationContext())
-                                        .userDao()))
-        );
+        quizViewModel = new QuizViewModel(getApplication());
 
         // Load questions
-        quizViewModel.loadQuestions(questions -> showCurrentQuestion());
+        quizViewModel.loadQuestions(questions -> {
+            if (questions == null || questions.isEmpty()) {
+                showNoQuestionsPopup(); // only show this when actual load failed or nothing valid
+            } else {
+                findViewById(R.id.quiz_container).setVisibility(View.VISIBLE);
+                showCurrentQuestion();
+            }
+        });
     }
 
     private void showCurrentQuestion() {
@@ -81,8 +80,7 @@ public class QuizActivity extends AppCompatActivity {
         resetAnswerSelection();
 
         tvQuestion.setText(q.getQuestion());
-        tvQuestionNumber.setText("Question " + (quizViewModel.getCurrentQuestionIndex() + 1)
-                + "/" + quizViewModel.getTotalQuestions());
+        tvQuestionNumber.setText("Question " + (quizViewModel.getCurrentQuestionIndex() + 1));
 
         List<String> answers = q.getAllAnswers();
         for (int i = 0; i < answerButtons.length; i++) {
@@ -167,6 +165,21 @@ public class QuizActivity extends AppCompatActivity {
             recreate(); // restart activity
         });
 
+        findViewById(R.id.btn_back_home).setOnClickListener(v -> {
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
+        });
+    }
+
+    private void showNoQuestionsPopup() {
+        soundControls.stopMusic();
+
+        RelativeLayout gameOver = findViewById(R.id.game_over_container);
+        TextView scoreText = findViewById(R.id.tv_final_score);
+        scoreText.setText("No questions found.\nCheck your internet and try again.");
+        gameOver.setVisibility(View.VISIBLE);
+
+        findViewById(R.id.btn_try_again).setOnClickListener(v -> recreate());
         findViewById(R.id.btn_back_home).setOnClickListener(v -> {
             startActivity(new Intent(this, HomeActivity.class));
             finish();

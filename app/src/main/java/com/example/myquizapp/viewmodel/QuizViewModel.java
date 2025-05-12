@@ -5,10 +5,14 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.example.myquizapp.data.database.AppDatabase;
 import com.example.myquizapp.data.local.session.AppSession;
+import com.example.myquizapp.data.local.storage.RoomUserStorage;
 import com.example.myquizapp.model.QuizQuestion;
 import com.example.myquizapp.model.User;
+import com.example.myquizapp.repository.MockQuizDataSource;
 import com.example.myquizapp.repository.QuizDataSource;
+import com.example.myquizapp.repository.RemoteQuizDataSource;
 import com.example.myquizapp.repository.UserRepository;
 
 import java.util.List;
@@ -21,13 +25,16 @@ public class QuizViewModel extends AndroidViewModel {
     private int currentIndex = 0;
     private int score = 0;
 
-    public QuizViewModel(@NonNull Application app,
-                         QuizDataSource quizDataSource,
-                         UserRepository userRepository)
+    public QuizViewModel(@NonNull Application app)
     {
         super(app);
-        this.quizDataSource = quizDataSource;
-        this.userRepository = userRepository;
+        //quizDataSource = new MockQuizDataSource();
+        quizDataSource = new RemoteQuizDataSource();
+        userRepository = new UserRepository(
+                new RoomUserStorage(
+                        AppDatabase.getInstance(app.getApplicationContext()).userDao()
+                )
+        );
     }
 
     public void loadQuestions(QuizDataSource.QuizCallback callback) {
