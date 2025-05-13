@@ -1,0 +1,11 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background color -->
+    <item android:drawable="@drawable/circle_background"/>
+
+    <!-- Your logo in center -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/lightbulb_glow"/>
+    </item>
+</layer-list>

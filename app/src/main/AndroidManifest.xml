@@ -13,9 +13,6 @@
         android:theme="@style/Theme.MyQuizApp"
         tools:targetApi="31">
         <activity
-            android:name=".ui.HighScoreActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.QuizActivity"
             android:exported="false" />
         <activity

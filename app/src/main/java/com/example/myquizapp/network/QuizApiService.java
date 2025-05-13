@@ -12,6 +12,7 @@ public interface QuizApiService {
     @GET("api.php")
     Call<OpenTriviaResponse> getQuestions(
             @Query("amount") int amount,
-            @Query("type") String type
+            @Query("type") String type,
+            @Query("difficulty") String difficulty
     );
 }

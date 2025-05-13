@@ -25,7 +25,7 @@ public class RemoteQuizDataSource implements QuizDataSource {
     @Override
     public void getQuestions(Context context, QuizCallback callback) {
         QuizApiService apiService = ApiClient.getInstance().create(QuizApiService.class);
-        Call<OpenTriviaResponse> call = apiService.getQuestions(10, "multiple");
+        Call<OpenTriviaResponse> call = apiService.getQuestions(10, "multiple", "easy");
 
         call.enqueue(new Callback<OpenTriviaResponse>() {
             @Override

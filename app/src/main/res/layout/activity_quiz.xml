@@ -82,7 +82,7 @@
             android:ellipsize="end"
             android:textSize="22sp"
             android:textColor="@color/off_white"
-            android:text="What's the capital of paris"
+            android:text="What's the capital of France"
             android:textStyle="bold"
             android:gravity="center" />
 
